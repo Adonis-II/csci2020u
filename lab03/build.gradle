@@ -17,6 +17,23 @@ jar{
   }
 }
 
+buildscript {
+	repositories {
+		flatDirs dirs: 'home/hunchojack/csci2020u/lab03/proguard6.0/lib'
+	}
+	dependencies {
+		classpath ':proguard'
+	}
+}
+
+task (minify, dependsOn: 'jar', type: proguard.gradle.ProGuardTask) {
+	configuration 'proguard.cfg'
+	injars 'build/libs/lab03-­1.0.jar'
+	outjars 'build/libs/lab03-­1.0.min.jar'
+}
+
+
+
 task(run, dependsOn: 'classes', type: JavaExec){
   main = 'csci2020u.lab03.CSVDemo'
   classpath = sourceSets.main.runtimeClasspath
