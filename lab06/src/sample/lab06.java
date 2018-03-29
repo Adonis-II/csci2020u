@@ -4,12 +4,14 @@ package sample;
     and cleaner than mine
 */
 import javafx.application.Application;
+import javafx.collections.*;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.scene.chart.*;
 
 public class lab06 extends Application {
 
@@ -23,6 +25,18 @@ public class lab06 extends Application {
             Color.AQUA, Color.GOLD, Color.DARKORANGE,
             Color.DARKSALMON, Color.LAWNGREEN, Color.PLUM
     };
+
+
+    ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(
+
+            new PieChart.Data(ageGroups[0],purchasesByAgeGroup[0]),
+            new PieChart.Data(ageGroups[1],purchasesByAgeGroup[1]),
+            new PieChart.Data(ageGroups[2],purchasesByAgeGroup[2]),
+            new PieChart.Data(ageGroups[3],purchasesByAgeGroup[3]),
+            new PieChart.Data(ageGroups[4],purchasesByAgeGroup[4]),
+            new PieChart.Data(ageGroups[5],purchasesByAgeGroup[5])
+
+    );
 
 
     private Canvas canvas;
@@ -41,58 +55,62 @@ public class lab06 extends Application {
         this.canvas.heightProperty().bind(primaryStage.heightProperty());
 
         root.getChildren().add(canvas);
+        final PieChart chart = new PieChart(pieChartData);
+        chart.setLegendVisible(true);
 
         primaryStage.setTitle("Lab 06 pie graph");
-        primaryStage.setScene(scene);
+        primaryStage.setScene(new Scene(chart));
         primaryStage.show();
 
+
+
+        drawPieChart(0.0,0.0,0.0,0.0,new Series(pieChartData,ageGroups,purchasesByAgeGroup,pieColours) );
 
 
     }
 
 
+    private void addColours(ObservableList<PieChart.Data> pieChartData, String... pieColors) {
 
+        GraphicsContext g = canvas.getGraphicsContext2D();
+        int i = 0;
+        for (PieChart.Data data : pieChartData) {
+            data.getNode().setStyle("-fx-pie-color: " + pieColors[i % pieColors.length] + ";");
+            i++;
+        }
+
+    }
+
+    private void drawPieChart(double cX, double cY, double rX, double rY, Series... series){
+
+        addColours(pieChartData,"AQUA", "GOLD", "DARKORANGE","DARKSALMON", "LAWNGREEN", "PLUM");
+
+
+
+    }
 
     public static class Series {
-        public double[] values;
-        public Color colour;
-        public String label;
+        public String[] ageGroups;
+        public int[] values;
+        public Color[] colour;
+        public ObservableList<PieChart.Data> pieChartData;
+
 
         public Series() {
-            this.values = new double[0];
-            this.colour = Color.YELLOW;
+            this.values = new int[0];
+            this.colour[0] = Color.YELLOW;
         }
 
-        public Series(double[] values, Color colour) {
+        public Series(ObservableList<PieChart.Data> pieChartData,String[] ageGroups, int[] values, Color[] colour) {
+            this.ageGroups = ageGroups;
             this.values = values;
             this.colour = colour;
+            this.pieChartData = pieChartData;
+
         }
 
-        public Series(double[] values, Color color, String label) {
-            this.values = values;
-            this.colour = colour;
-            this.label = label;
-        }
 
-        public double[] getValues() {
-            return values;
-        }
-        public void setValues(double[] values) {
-            this.values = values;
-        }
 
-        public Color getColour() {
-            return colour;
-        }
-        public void setColour(Color colour) {
-            this.colour = colour;
-        }
 
-        public String getLabel() {
-            return label;
-        }
-        public void setLabel(String label) {
-            this.label = label;
-        }
     }
 }
